@@ -1,0 +1,28 @@
+#!/bin/bash
+echo " Pipeline stated: $(date)"
+makeblastdb -in diatoms.sequences.FINAL2017.fasta -out diatoms -dbtype nucl
+echo " QC started: $(date)"
+python ./ampliconQC.py --data $1 --forward ATGCGTTGGAGAGARCGTTTC --reverse GATCACCTTCTAATTTACCWACAACTG --threads 130 --histograms --qiime
+echo " QIIME Pipeline: $(date)"
+for file in $1/*.passedQC.fastq; do awk 'NR%4==2{sum+=1}END{print FILENAME,sum}' $file >> $1/diatomSequenceCounts.txt; done
+echo $(date)
+pick_otus.py -i $1/readyForQiime.allsamples.fasta -o $1/picked_otus_97 
+echo $(date)
+pick_rep_set.py -i $1/picked_otus_97/readyForQiime.allsamples_otus.txt -f $1/readyForQiime.allsamples.fasta -o $1/repset.fasta
+echo $(date)
+blastn -db diatoms -query $1/repset.fasta -out $1/repset.diatoms.blastn -task blastn -max_target_seqs 1 -num_threads 130 -outfmt 6 -evalue 0.01
+echo $(date)
+mkdir $1/assigned_taxonomy
+echo $(date)
+python ./create_taxonomy_assignments_from_blast.py --taxonomy diatoms.taxonomy.FINAL2017.txt --percid 95.0 --blast $1/repset.diatoms.blastn --output $1/assigned_taxonomy/repset.taxonomy.txt
+echo $(date)
+make_otu_table.py -i $1/picked_otus_97/readyForQiime.allsamples_otus.txt -t $1/assigned_taxonomy/repset.taxonomy.txt -o $1/otu_table.biom
+echo " Lookup taxa from OTU table: $(date)"
+filter_taxa_from_otu_table.py -i $1/otu_table.biom -o $1/otu_table.diatomsonly.biom -n MARINE,NOT_DIATOM,Yellow_green_Algae,None
+echo " Sort OTU table: $(date)"
+sort_otu_table.py -i $1/otu_table.diatomsonly.biom -o $1/otu_table.diatomsonly.biom
+echo " Summerise taxa: $(date)"
+summarize_taxa.py -L 1 -i $1/otu_table.diatomsonly.biom -o $1/visualised_taxonomy -a
+echo " Produce Diatom reports: $(date)"
+python ./produceDiatomReports.py --folder $1 --lookup $2
+echo "Pipeline finished: $(date)"
