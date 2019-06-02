@@ -6,7 +6,6 @@ volumes:
 services:
   app:
    image: aghillo/diatom-pipeline:1.0
-   build: .
    container_name: pipeline
    restart: always
    volumes:
