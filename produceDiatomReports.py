@@ -13,7 +13,8 @@ def main():
 	for line in open(countsFile, "rU"):
 		linelist = re.split(' ',line)
 		filename = linelist[0]
-		count = int(45367) #int(linelist[1].rstrip())
+		# count = int(45367) #int(linelist[1].rstrip())
+		count = int(linelist[1].rstrip())
 		#filename will be sample.passedQC.fastq
 		filenamesplit = re.split('\.',filename)
 		sample = filenamesplit[0].replace(options.folder,'').replace('/','')
@@ -29,7 +30,8 @@ def main():
 
 	# Import the results into a pandas dataframe
 	data = pandas.read_csv(resultsFile,header=1,sep='\t',index_col=0)
-	data.index.names = ['Taxonomy']
+	#data.index.names = ['Taxonomy']
+	#data.index.names = ['#OTU ID']
 
 	# screen on sequence counts. If a sequence count is <= 3000 then the sequencing will need repeating
 	# add rag row to the dataframe
@@ -38,11 +40,13 @@ def main():
 	for sample in counts:
 		count = int(counts[sample])
 		if count <= 3000:
-			repeats.append(sample)
-			if count > 3000:
-				passes.append(sample)
-	passed = data.loc[passes]
+		    repeats.append(sample)
+		if count > 3000:
+		    passes.append(sample)
+        #passed = data.loc[passes]
+	passed = data[passes]
 	repeat = data.loc[repeats]
+	#repeat = data[repeats]
 
 	# change the dataframe column names (sample names from lookup) if required.
 	# if a name isn't in the lookup then it won't change it and keep the fera one.
