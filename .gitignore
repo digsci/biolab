@@ -3,3 +3,4 @@ docs/
 .ipynb_checkpoints/
 sequences/
 diatoms.n*
+*.xlsx
