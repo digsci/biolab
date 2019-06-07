@@ -1,6 +1,6 @@
 pear/pear
-docs/
 .ipynb_checkpoints/
 sequences/
 diatoms.n*
+docs/
 *.xlsx

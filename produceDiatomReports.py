@@ -30,8 +30,7 @@ def main():
 
 	# Import the results into a pandas dataframe
 	data = pandas.read_csv(resultsFile,header=1,sep='\t',index_col=0)
-	#data.index.names = ['Taxonomy']
-	#data.index.names = ['#OTU ID']
+	data.index.names = ['Taxonomy']
 
 	# screen on sequence counts. If a sequence count is <= 3000 then the sequencing will need repeating
 	# add rag row to the dataframe
@@ -41,8 +40,8 @@ def main():
 		count = int(counts[sample])
 		if count <= 3000:
 		    repeats.append(sample)
-		if count > 3000:
-		    passes.append(sample)
+		if count > 3000: 
+                  passes.append(sample)
         #passed = data.loc[passes]
 	passed = data[passes]
 	repeat = data.loc[repeats]
