@@ -42,10 +42,8 @@ def main():
 		    repeats.append(sample)
 		if count > 3000: 
                   passes.append(sample)
-        #passed = data.loc[passes]
 	passed = data[passes]
-	repeat = data.loc[repeats]
-	#repeat = data[repeats]
+	repeat = data[repeats]
 
 	# change the dataframe column names (sample names from lookup) if required.
 	# if a name isn't in the lookup then it won't change it and keep the fera one.
