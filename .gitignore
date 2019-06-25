@@ -1,6 +1,10 @@
 pear/pear
 .ipynb_checkpoints/
+__pycache__/
 sequences/
 diatoms.n*
 docs/
 *.xlsx
+azure/
+images/
+utilities/
